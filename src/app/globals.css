@@ -8,12 +8,24 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --tab-active: #e5e7eb;
+  --tab-hover: #f3f4f6;
+  --table-header: #f3f4f6;
+  --table-row-even: #ffffff;
+  --table-row-odd: #f9fafb;
+  --table-border: #e5e7eb;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --tab-active: #374151;
+    --tab-hover: #1f2937;
+    --table-header: #1f2937;
+    --table-row-even: #111827;
+    --table-row-odd: #1f2937;
+    --table-border: #374151;
   }
 }
 
@@ -21,4 +33,209 @@ body {
   color: var(--foreground);
   background: var(--background);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+.tab-container {
+  display: flex;
+  overflow-x: auto;
+  border-bottom: 1px solid #374151;
+  margin-bottom: 1rem;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.tab-container::-webkit-scrollbar {
+  display: none;
+}
+
+.tab {
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  background-color: var(--tab-hover);
+}
+
+.tab.active {
+  border-bottom-color: #3b82f6;
+  background-color: var(--tab-active);
+}
+
+.markdown-content {
+  max-width: 65ch;
+  margin: 0 auto;
+  line-height: 1.8;
+  font-size: 1rem;
+  white-space: pre-wrap;
+}
+
+.markdown-content h1 {
+  font-size: 2em;
+  margin: 1.5em 0 1em;
+  font-weight: bold;
+  border-bottom: 2px solid #3b82f6;
+  padding-bottom: 0.3em;
+}
+
+.markdown-content h2 {
+  font-size: 1.5em;
+  margin: 1.2em 0 0.8em;
+  font-weight: bold;
+  border-bottom: 1px solid #3b82f6;
+  padding-bottom: 0.2em;
+}
+
+.markdown-content h3 {
+  font-size: 1.25em;
+  margin: 1em 0 0.6em;
+  font-weight: bold;
+}
+
+.markdown-content p {
+  margin: 1em 0;
+  line-height: 1.8;
+}
+
+.markdown-content ul {
+  list-style-type: disc;
+  margin: 1em 0;
+  padding-left: 1.5em;
+}
+
+.markdown-content ol {
+  list-style-type: decimal;
+  margin: 1em 0;
+  padding-left: 1.5em;
+}
+
+.markdown-content li {
+  margin: 0.5em 0;
+}
+
+.markdown-content code {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.markdown-content pre {
+  background-color: rgba(0, 0, 0, 0.1);
+  padding: 1rem;
+  border-radius: 5px;
+  overflow-x: auto;
+  margin: 1em 0;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid #3b82f6;
+  padding: 0.5em 1em;
+  margin: 1em 0;
+  background-color: rgba(59, 130, 246, 0.1);
+  color: rgba(var(--foreground), 0.8);
+}
+
+.markdown-content hr {
+  border: none;
+  border-top: 2px solid rgba(59, 130, 246, 0.3);
+  margin: 2em 0;
+}
+
+/* テーブルのスタイリング強化 */
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+  margin: 1em 0;
+  border: 1px solid var(--table-border);
+  border-radius: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.markdown-content table {
+  width: auto;
+  min-width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 0;
+  table-layout: fixed;
+}
+
+.markdown-content th {
+  background-color: var(--table-header);
+  font-weight: 600;
+  text-align: center;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--table-border);
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+.markdown-content td {
+  padding: 0.5rem;
+  border-bottom: 1px solid var(--table-border);
+  border-right: 1px solid var(--table-border);
+  white-space: nowrap;
+  min-width: 80px;
+}
+
+/* 数値データ用のセル */
+.markdown-content td:nth-child(1), /* 区分 */
+.markdown-content td:nth-child(2), /* 売上 */
+.markdown-content td:nth-child(5), /* 数量 */
+.markdown-content td:nth-child(7), /* 単価 */
+.markdown-content td:nth-child(8), /* 金額 */
+.markdown-content td:nth-child(9) { /* 税抜 */
+  text-align: right;
+  font-family: monospace;
+}
+
+/* 品名・規格用の幅広セル */
+.markdown-content td:nth-child(4) {
+  min-width: 200px;
+  white-space: normal;
+}
+
+/* 空セルのスタイル */
+.markdown-content td:empty::after {
+  content: "―";
+  color: #9ca3af;
+  text-align: center;
+  display: block;
+}
+
+.markdown-content tr:nth-child(even) {
+  background-color: var(--table-row-even);
+}
+
+.markdown-content tr:nth-child(odd) {
+  background-color: var(--table-row-odd);
+}
+
+.markdown-content tr:last-child td {
+  border-bottom: none;
+}
+
+/* 連続する表の間隔調整 */
+.table-wrapper + .table-wrapper {
+  margin-top: 1.5rem;
+}
+
+.article-card {
+  background-color: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(59, 130, 246, 0.2);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+  transition: all 0.2s;
+}
+
+.article-card:hover {
+  border-color: rgba(59, 130, 246, 0.4);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+              0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }

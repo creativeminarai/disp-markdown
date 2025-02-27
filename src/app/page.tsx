@@ -1,101 +1,135 @@
-import Image from "next/image";
+'use client';
+
+import { useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import { fetchData, KnowledgeItem } from '@/services/api';
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const [data, setData] = useState<KnowledgeItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [categories, setCategories] = useState<string[]>([]);
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+  useEffect(() => {
+    const loadInitialData = async () => {
+      try {
+        const result = await fetchData();
+        setData(result);
+        const uniqueCategories = Array.from(
+          new Set(result.map(item => item.カテゴリ))
+        ).filter(Boolean);
+        setCategories(uniqueCategories);
+      } catch (error) {
+        console.error('データの読み込みに失敗しました:', error);
+        setError('データの読み込みに失敗しました');
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadInitialData();
+  }, []);
+
+  const filteredData = selectedCategory
+    ? data.filter(item => item.カテゴリ === selectedCategory)
+    : data;
+
+  // テキスト処理関数
+  const processText = (text: string) => {
+    return text
+      .replace(/\n{3,}/g, '\n\n')
+      .replace(/^\s+|\s+$/g, '');
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-base">読み込み中...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-base text-red-500">{error}</div>
+      </div>
+    );
+  }
+
+  return (
+    <main className="container mx-auto px-3 py-4 max-w-4xl">
+      <h1 className="text-xl font-bold mb-3 text-center">ナレッジベース</h1>
+      
+      {categories.length > 0 && (
+        <div className="tab-container mb-4">
+          {categories.map(category => (
+            <button
+              key={category}
+              className={`tab text-sm ${selectedCategory === category ? 'active' : ''}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {category}
+            </button>
+          ))}
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      )}
+
+      <div className="space-y-3">
+        {filteredData.map((item, index) => (
+          <article key={index} className="article-card py-2">
+            <div className="flex items-center gap-2 mb-2">
+              <h2 className="text-base font-bold text-blue-500">
+                {item.タイトル}
+              </h2>
+              {item.ファイルID && (
+                <a
+                  href={`https://drive.google.com/file/d/${item.ファイルID}/view`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center text-gray-500 hover:text-blue-600"
+                  title="元データを表示"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-4 h-4"
+                  >
+                    <path fillRule="evenodd" d="M4.25 5.5a.75.75 0 00-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 00.75-.75v-4a.75.75 0 011.5 0v4A2.25 2.25 0 0112.75 17h-8.5A2.25 2.25 0 012 14.75v-8.5A2.25 2.25 0 014.25 4h5a.75.75 0 010 1.5h-5z" />
+                    <path fillRule="evenodd" d="M6.194 12.753a.75.75 0 001.06.053L16.5 4.44v2.81a.75.75 0 001.5 0v-4.5a.75.75 0 00-.75-.75h-4.5a.75.75 0 000 1.5h2.553l-9.056 8.194a.75.75 0 00-.053 1.06z" />
+                  </svg>
+                </a>
+              )}
+            </div>
+            <div className="markdown-content prose prose-blue prose-sm">
+              <ReactMarkdown components={{
+                p: ({ children }) => {
+                  if (typeof children === 'string') {
+                    return <p className="!my-1">{processText(children)}</p>;
+                  }
+                  return <p className="!my-1">{children}</p>;
+                },
+                table: ({ children }) => (
+                  <div className="table-wrapper">
+                    <table>{children}</table>
+                  </div>
+                ),
+                ul: ({ children }) => <ul className="!my-1">{children}</ul>,
+                li: ({ children }) => <li className="!my-0">{children}</li>
+              }}>
+                {item.本文 || ''}
+              </ReactMarkdown>
+            </div>
+          </article>
+        ))}
+      </div>
+
+      {filteredData.length === 0 && (
+        <div className="text-center text-gray-500 mt-4 text-sm">
+          このカテゴリにはまだコンテンツがありません。
+        </div>
+      )}
+    </main>
   );
 }
