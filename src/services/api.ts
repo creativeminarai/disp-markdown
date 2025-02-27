@@ -2,7 +2,7 @@ export interface KnowledgeItem {
   タイトル: string;
   本文: string;
   カテゴリ: string;
-  [key: string]: any;
+  ファイルID: string;
 }
 
 export const fetchData = async (category?: string, query?: string) => {
