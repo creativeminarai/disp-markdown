@@ -1,36 +1,47 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ナレッジベースアプリケーション
 
-## Getting Started
+シンプルなナレッジベース管理システムです。Google Spreadsheetと連携してナレッジを管理・表示します。
 
-First, run the development server:
+## 機能
+
+- カテゴリ別のナレッジ表示
+- Markdownコンテンツのサポート
+- Google Drive連携（原本表示）
+- レスポンシブデザイン
+
+## 技術スタック
+
+- Next.js 15.2.0
+- React 19.0.0
+- TypeScript
+- Tailwind CSS
+
+## セットアップ
 
 ```bash
+# 依存関係のインストール
+npm install
+
+# 開発サーバーの起動
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+[http://localhost:3000](http://localhost:3000)にアクセスして確認できます。
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## プロジェクト構成
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── api/
+│   │   └── knowledge/      # API エンドポイント
+│   ├── layout.tsx         # アプリケーションレイアウト
+│   ├── page.tsx          # メインページ
+│   └── globals.css       # グローバルスタイル
+└── services/
+    └── api.ts            # API通信ロジック
+```
 
-## Learn More
+## API
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Google Apps Scriptと連携して、スプレッドシートからデータを取得します。
