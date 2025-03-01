@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import remarkBreaks from 'remark-breaks';
+import Image from 'next/image';
 
 interface ArticleAccordionProps {
   title: string;
@@ -17,18 +18,45 @@ export const ArticleAccordion: React.FC<ArticleAccordionProps> = ({
   processText = (text) => text
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(content);
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.error('クリップボードへのコピーに失敗しました:', err);
+    }
+  };
+
   return (
     <div className="article-card py-2">
       {/* タイトル部分 - クリック可能 */}
       <div className="flex items-center gap-2 mb-2">
-        <h2 
+        <h2
           className="text-base font-bold text-blue-800"
           style={{ cursor: 'pointer' }}
           onClick={() => setIsExpanded(!isExpanded)}
         >
           {title}
         </h2>
+        <button
+          onClick={handleCopy}
+          className="inline-flex items-center text-gray-500 hover:text-blue-600 transition-colors"
+          title={isCopied ? "コピーしました！" : "本文をコピー"}
+        >
+          {isCopied ? (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+            </svg>
+          ) : (
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+              <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2 3 3 0 01-3 3H9a3 3 0 01-3-3z" />
+            </svg>
+          )}
+        </button>
         {fileId && (
           <a
             href={`https://drive.google.com/file/d/${fileId}/view`}
@@ -74,24 +102,31 @@ export const ArticleAccordion: React.FC<ArticleAccordionProps> = ({
                   <table>{children}</table>
                 </div>
               ),
-              ul: ({ children, depth }) => (
-                <ul className={`!my-1 !space-y-0 ${depth > 0 ? 'ml-4' : ''}`}>{children}</ul>
+              ul: ({ children, ...props }) => (
+                <ul className="!my-1 !space-y-0" {...props}>{children}</ul>
               ),
-              li: ({ children, ordered, index }) => {
+              li: ({ children }) => {
                 const content = typeof children === 'string' ? processText(children) : children;
-                const marker = ordered ? `${index + 1}.` : '•';
                 return (
                   <li className="!my-0 inline-flex items-start mr-2">
-                    <span className="mr-1">{marker}</span>
+                    <span className="mr-1">•</span>
                     <span>{content}</span>
                   </li>
                 );
               },
               img: ({ src, alt }) => (
-                <img src={src} alt={alt} className="inline-block max-h-16" style={{ maxWidth: '100%', verticalAlign: 'middle' }} />
+                src ? (
+                  <Image
+                    src={src}
+                    alt={alt || ''}
+                    width={320}
+                    height={240}
+                    className="inline-block max-h-16 w-auto"
+                    style={{ verticalAlign: 'middle' }}
+                  />
+                ) : null
               ),
-              a: ({ node, children, ...props }) => {
-                // 画像へのリンクを小さく表示
+              a: ({ children, ...props }) => {
                 return <a {...props} className="text-sm">{children}</a>;
               }
             }}

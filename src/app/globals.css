@@ -65,12 +65,49 @@ body {
   background-color: var(--tab-active);
 }
 
+:root {
+  --content-font-size: 0.8rem;
+}
+
 .markdown-content {
   max-width: 65ch;
   margin: 0 auto;
   line-height: 1.8;
-  font-size: 1rem;
+  font-size: var(--content-font-size);
   white-space: pre-wrap;
+}
+
+/* フォントサイズ調整ボタン */
+.font-size-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-left: 1rem;
+}
+
+.font-size-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid var(--table-border);
+  border-radius: 4px;
+  background-color: transparent;
+  color: var(--foreground);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.font-size-button:hover {
+  background-color: var(--tab-hover);
+  border-color: #3b82f6;
+}
+
+.font-size-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .markdown-content h1 {
