@@ -2,6 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { ExpandableContent } from '@/components/ExpandableContent';
+import remarkBreaks from 'remark-breaks';
 import { fetchData, KnowledgeItem } from '@/services/api';
 
 export default function Home() {
@@ -37,8 +40,10 @@ export default function Home() {
   // テキスト処理関数
   const processText = (text: string) => {
     return text
-      .replace(/\n{3,}/g, '\n\n')
-      .replace(/^\s+|\s+$/g, '');
+      .replace(/^\s+|\s+$/g, '')
+      .replace(/\n\s*\n/g, '\n')  // 連続する改行を1つに
+      .replace(/^[-*+]\s*/gm, '')  // 箇条書きの記号を削除
+      .replace(/^\d+\.\s*/gm, ''); // 番号付きリストの番号を削除
   };
 
   if (loading) {
@@ -103,21 +108,39 @@ export default function Home() {
               )}
             </div>
             <div className="markdown-content prose prose-blue prose-sm">
-              <ReactMarkdown components={{
-                p: ({ children }) => {
-                  if (typeof children === 'string') {
-                    return <p className="!my-1">{processText(children)}</p>;
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm, remarkBreaks]}
+                components={{
+                  root: ({ children }) => (
+                    <ExpandableContent maxLines={5}>
+                      {children}
+                    </ExpandableContent>
+                  ),
+                  p: ({ children }) => {
+                    if (typeof children === 'string') {
+                      return <p className="!my-1">{processText(children)}</p>;
+                    }
+                    return <p className="!my-1">{children}</p>;
+                  },
+                  table: ({ children }) => (
+                    <div className="table-wrapper">
+                      <table>{children}</table>
+                    </div>
+                  ),
+                  ul: ({ children, depth }) => (
+                    <ul className={`!my-1 !space-y-0 ${depth > 0 ? 'ml-4' : ''}`}>{children}</ul>
+                  ),
+                  li: ({ children, ordered, index }) => {
+                    const content = typeof children === 'string' ? processText(children) : children;
+                    const marker = ordered ? `${index + 1}.` : '•';
+                    return (
+                      <li className="!my-0 inline-flex items-start mr-2">
+                        <span className="mr-1">{marker}</span>
+                        <span>{content}</span>
+                      </li>
+                    );
                   }
-                  return <p className="!my-1">{children}</p>;
-                },
-                table: ({ children }) => (
-                  <div className="table-wrapper">
-                    <table>{children}</table>
-                  </div>
-                ),
-                ul: ({ children }) => <ul className="!my-1">{children}</ul>,
-                li: ({ children }) => <li className="!my-0">{children}</li>
-              }}>
+                }}>
                 {item.本文 || ''}
               </ReactMarkdown>
             </div>

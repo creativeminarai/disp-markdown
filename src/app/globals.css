@@ -239,3 +239,47 @@ body {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
               0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
+
+/* アコーディオンスタイル */
+.accordion-content {
+  position: relative;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.accordion-content .content {
+  position: relative;
+  overflow: hidden;
+  transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  line-height: 1.6;
+}
+
+.accordion-content .content:not(.expanded) {
+  -webkit-mask-image: linear-gradient(to bottom, black calc(100% - 2rem), transparent 100%);
+  mask-image: linear-gradient(to bottom, black calc(100% - 2rem), transparent 100%);
+}
+
+.accordion-button {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--background);
+  border: 1px solid var(--table-border);
+  border-radius: 0.25rem;
+  color: var(--foreground);
+  cursor: pointer;
+  font-size: 0.875rem;
+  transition: all 0.2s ease;
+  line-height: 1;
+}
+
+.accordion-button:hover {
+  background-color: var(--tab-hover);
+  border-color: #3b82f6;
+}
+
+.accordion-button:focus {
+  outline: none;
+  ring: 2px solid #3b82f6;
+}
