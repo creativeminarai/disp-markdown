@@ -1,43 +1,77 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 
-interface AccordionProps {
+interface ExpandableContentProps {
   children: React.ReactNode;
-  maxHeight?: number;
-  buttonText?: {
-    expand: string;
-    collapse: string;
-  };
+  maxLines?: number;
 }
 
-export const ExpandableContent: React.FC<AccordionProps> = ({
+export const ExpandableContent: React.FC<ExpandableContentProps> = ({ 
   children,
-  maxHeight = 150,
-  buttonText = {
-    expand: '続きを読む',
-    collapse: '閉じる'
-  }
+  maxLines = 5
 }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  // 高さが満足しているか確認する必要があります
+  const [showButton, setShowButton] = useState(true); // 常に表示する
+  
+  // マウント時にコンソールに出力
+  useEffect(() => {
+    console.log('ExpandableContent mounted');
+    console.log('ReactDOM is available:', !!ReactDOM);
+    
+    // DOMの調査
+    setTimeout(() => {
+      const elements = document.querySelectorAll('.debug-marker');
+      console.log('Debug markers found:', elements.length);
+    }, 1000);
+  }, []);
 
   return (
-    <div className="md-accordion">
+    <div style={{ position: 'relative', overflow: 'hidden', border: '3px dashed green' }} className="debug-marker">
       <div
-        className={`md-accordion-content ${isExpanded ? 'expanded' : 'collapsed'}`}
+        ref={contentRef}
         style={{
-          maxHeight: isExpanded ? '100%' : `${maxHeight}px`
+          maxHeight: isExpanded ? 'none' : '150px',
+          overflow: 'hidden',
+          transition: 'max-height 0.3s ease-out'
         }}
       >
         {children}
       </div>
       
-      <div className="md-accordion-gradient" style={{ opacity: isExpanded ? 0 : 1 }} />
+      {!isExpanded && (
+        <div 
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            height: '50px',
+            background: 'linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1))',
+            pointerEvents: 'none'
+          }}
+        />
+      )}
       
-      <button 
-        className="md-accordion-button"
-        onClick={() => setIsExpanded(!isExpanded)}
-      >
-        {isExpanded ? buttonText.collapse : buttonText.expand}
-      </button>
+      {showButton && (
+        <button
+          onClick={() => setIsExpanded(!isExpanded)}
+          style={{
+            display: 'block',
+            width: '100%',
+            padding: '8px',
+            marginTop: '8px',
+            backgroundColor: 'transparent',
+            border: '1px solid #ddd',
+            borderRadius: '4px',
+            cursor: 'pointer'
+          }}
+        >
+          {isExpanded ? '閉じる' : '続きを読む'}
+        </button>
+      )}
     </div>
   );
 };

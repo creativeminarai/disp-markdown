@@ -11,11 +11,16 @@
 
 /* Headers */
 .markdown-content h1 {
-  font-size: 1.4rem;
+  font-size: 0.42rem; /* 1.4remの30% */
   font-weight: 600;
   margin: 1.6rem 0 0.8rem;
   padding: 0.4rem;
   background-color: #f0f0f0;
+}
+
+/* マークダウンのh1にも影響を及ぼすために「.prose h1」にも同じスタイルを適用 */
+.prose h1 {
+  font-size: 0.42rem !important;
 }
 
 .markdown-content h2 {
