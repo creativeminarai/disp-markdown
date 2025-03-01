@@ -97,6 +97,15 @@ export const ArticleAccordion: React.FC<ArticleAccordionProps> = ({
                 }
                 return <p className="!my-1">{children}</p>;
               },
+              td: ({ children }) => {
+                const content = children?.toString() || '';
+                const isNumeric = /^[\d,.-]+$/.test(content.trim());
+                return (
+                  <td className={isNumeric ? 'numeric' : 'text-content'}>
+                    {children}
+                  </td>
+                );
+              },
               table: ({ children }) => (
                 <div className="table-wrapper">
                   <table>{children}</table>
